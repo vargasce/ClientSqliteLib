@@ -28,6 +28,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include "ClientSlqliteinC.h"
+#include "Log.h"
 
 #define csl_ERROR -1
 #define csl_SUCCESS 1
@@ -42,6 +43,7 @@ int InitDataBase(char *nameDB);
 int Create_DB(char *nameDB);
 void InserNameDBtoSystem(char *nameDB);
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
+void InitLog();
 char** copyStringArray(char** array, int size);
 
 //SIN USO
@@ -52,6 +54,7 @@ char *insertNameDB();
 sqlite3 *db = NULL;
 char *conectionName = NULL;
 response_query_sqlite *RESPONSE_QUERY = NULL;
+Log *log = NULL;
 
 /**
  * @brief Create db con el nombre indicado por parametro.
@@ -59,6 +62,8 @@ response_query_sqlite *RESPONSE_QUERY = NULL;
  * @return 1 = sucees. -1 = error.
 */
 int csl_CreateDataBase(char *nameDB){
+
+    InitLog();
 
 	if( InitSystem() != csl_ERROR){
 		InitDataBase(nameDB);
@@ -86,7 +91,7 @@ int InitSystem(){
 	rc = sqlite3_exec(db, sqlAdd, 0, 0, &err_msg);
 
 	if(rc != SQLITE_OK){
-		//fprintf(stderr, "Failed to create table\n");
+        //fprintf(stderr, "Failed to create table\n");
         //fprintf(stderr, "SQL error: %s\n", err_msg);
         sqlite3_free(err_msg);
 	}
@@ -162,6 +167,8 @@ int Create_DB(char *nameDB){
 */
 int csl_ListDataBase(){
 
+    InitLog();
+
 	int rc = sqlite3_open(SYSTEM_TABLE, &db);
 	char *err_msg;
 
@@ -189,7 +196,7 @@ int csl_ListDataBase(){
 
 int callback(void *NotUsed, int argc, char **argv, char **azColName){
 
-	NotUsed = 0;
+    NotUsed = 0;
     RESPONSE_QUERY = (response_query_sqlite*) malloc(sizeof(response_query_sqlite));
     RESPONSE_QUERY->payload = (Payload *) malloc(sizeof(Payload));
     RESPONSE_QUERY->payload->argv = (char **) malloc(sizeof(argv));
@@ -223,11 +230,50 @@ void csl_CloseConection(){
 }
 
 /**
+*   @brief Crear tabla en base de datos, antes realizar conexion a la misma.
+*   @param sql request (char *sql = "create table ....").
+*   @return 1 success -1 error
+*/
+int csl_CreateTable(char *sqlRequest){
+
+    if(!conectionName){
+        log->error("No existe conexion con la db");
+        return csl_ERROR;
+    }
+
+    char *err_msg = 0;
+    int rc = sqlite3_open(conectionName, &db);
+
+    if(rc != SQLITE_OK){
+        char *msj = "Failed conection db ";
+        strcat( msj, sqlite3_errmsg(db));
+        log->error(msj);
+        csl_CloseConection();
+        return csl_ERROR;
+    }
+
+    rc = sqlite3_exec(db, sqlRequest, 0, 0, &err_msg);
+
+    if(rc != SQLITE_OK){
+        log->error(err_msg);
+        csl_CloseConection();
+        return csl_ERROR;
+    }
+
+    log->information("Succes create table.");
+    csl_CloseConection();
+
+    return csl_SUCCESS;
+}
+
+/**
  * @brief Guarda puntero de conexion db enviado por parametro para proximas consultar.
  * @param Nombre conexion.
  * @return 1 = sucees. -1 = error.
 */
 int csl_ConectionDB(char *nameDB){
+
+    InitLog();
 
 	int existNameBD = -1;
 	sqlite3_stmt *res;
@@ -270,13 +316,17 @@ int csl_ConectionDB(char *nameDB){
 		return csl_ERROR;
 	}
 
+    log->information("Succes create conexion db.");
+
 	return csl_SUCCESS;
 }
 
 /**
- *	Tomando como inicio un puntero char, inserta un string
- *  en la posicion indicada.
- *  retorna un nuevo puntero con el string y el insert.
+ *	@brief Tomando como inicio un puntero char, inserta un string en la posicion indicada.
+ *  @param original string.
+ *  @param insert string.
+ *  @param posicion insert string.
+ *  @return nuevo puntero con el string y el insert.
  **/
 char *insertString(char** original, char* insert, int pos){
 
@@ -365,4 +415,10 @@ void csl_FreeResponseQuery(response_query_sqlite *response){
     response->payload->azColName = NULL;
     free(response->payload);
 	free(response);
+}
+
+void InitLog(){
+    if(log == NULL){
+        log = CreateLog();
+    }
 }

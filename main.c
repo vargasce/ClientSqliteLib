@@ -20,14 +20,15 @@ int main()
     csl_FreeResponseQuery(response);
 
 	if( csl_ConectionDB("identity.db") != 1){
-		printf("Error\n");
+		printf("Error created conection\n");
 	}
 
     // TODO (Tauriel#1#06/02/23): Probar utilizar la conexion, metodo para crear tablas en la db
-
+    if (csl_CreateTable("CREATE TABLE Company(Id INT, CompanyName TEXT, CompanyLegalID TEXT, CompanyStatusId INT );") != 1){
+        printf("Error created table\n");
+    }
 
 	csl_CloseConection();
-    printf("Hello world!\n");
     getchar();
     return 0;
 }
