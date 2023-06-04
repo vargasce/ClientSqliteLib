@@ -4,6 +4,8 @@
 
 int main()
 {
+    char *error_msg = "";
+
     csl_CreateDataBase("identity.db");
     csl_ListDataBase();
 	response_query_sqlite *response = csl_SelectResponse();
@@ -20,12 +22,18 @@ int main()
     csl_FreeResponseQuery(response);
 
 	if( csl_ConectionDB("identity.db") != 1){
-		printf("Error created conection\n");
+		//Ctrl error;
 	}
 
-    // TODO (Tauriel#1#06/02/23): Probar utilizar la conexion, metodo para crear tablas en la db
-    if (csl_CreateTable("CREATE TABLE Company(Id INT, CompanyName TEXT, CompanyLegalID TEXT, CompanyStatusId INT );") != 1){
-        printf("Error created table\n");
+    if( csl_CreateTable("CREATE TABLE Company(Id INTEGER PRIMARY KEY, CompanyName TEXT, CompanyLegalID TEXT, CompanyStatusId INT );") != 1){
+		//Ctrl error;
+    }
+
+    char *sql = "INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 2', '30542342322' , 1);";
+
+    if( csl_QuerySqlInsert(sql, &error_msg) != 1){
+        fprintf(stderr,"Error : %s \n", error_msg);
+		//Ctrl error;
     }
 
 	csl_CloseConection();

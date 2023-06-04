@@ -248,20 +248,52 @@ int csl_CreateTable(char *sqlRequest){
         char *msj = "Failed conection db ";
         strcat( msj, sqlite3_errmsg(db));
         log->error(msj);
-        csl_CloseConection();
         return csl_ERROR;
     }
 
     rc = sqlite3_exec(db, sqlRequest, 0, 0, &err_msg);
 
     if(rc != SQLITE_OK){
-        log->error(err_msg);
-        csl_CloseConection();
+        log->warning(err_msg);
         return csl_ERROR;
     }
 
     log->information("Succes create table.");
-    csl_CloseConection();
+    return csl_SUCCESS;
+}
+
+/**
+*   @brief Insertar datos en tabla, antes realizar conexion a la misma.
+*   @param sql request (char *sql = "create table ....").
+*   @param Error mensage
+*   @return 1 success -1 error
+*/
+int csl_QuerySqlInsert(char *sqlRequest, char *err){
+
+    if(!conectionName){
+        log->error("No existe conexion con la db");
+        return csl_ERROR;
+    }
+
+    char *err_msg = 0;
+    int rc = sqlite3_open(conectionName, &db);
+
+    if(rc != SQLITE_OK){
+        char *msj = "Failed conection db ";
+        strcat( msj, sqlite3_errmsg(db));
+        log->error(msj);
+        return csl_ERROR;
+    }
+
+    rc = sqlite3_exec(db, sqlRequest, 0, 0, &err_msg);
+
+    if(rc != SQLITE_OK){
+        strcpy(err, err_msg);
+        log->error(err_msg);
+        return csl_ERROR;
+    }
+
+    log->information("Succes insert data.");
 
     return csl_SUCCESS;
 }
