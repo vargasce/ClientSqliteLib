@@ -45,6 +45,7 @@ void InserNameDBtoSystem(char *nameDB);
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
 void InitLog();
 char** copyStringArray(char** array, int size);
+int countPoiterString(char** arrayString);
 
 //SIN USO
 void clearTerminal();
@@ -264,11 +265,11 @@ int csl_CreateTable(char *sqlRequest){
 
 /**
 *   @brief Insertar datos en tabla, antes realizar conexion a la misma.
-*   @param sql request (char *sql = "create table ....").
+*   @param sql request.
 *   @param Error mensage
 *   @return 1 success -1 error
 */
-int csl_QuerySqlInsert(char *sqlRequest, char *err){
+int csl_QuerySqlInsert(char *sqlRequest, char **err){
 
     if(!conectionName){
         log->error("No existe conexion con la db");
@@ -288,14 +289,66 @@ int csl_QuerySqlInsert(char *sqlRequest, char *err){
     rc = sqlite3_exec(db, sqlRequest, 0, 0, &err_msg);
 
     if(rc != SQLITE_OK){
-        strcpy(err, err_msg);
-        log->error(err_msg);
+        *err = err_msg;
         return csl_ERROR;
     }
 
-    log->information("Succes insert data.");
+    return csl_SUCCESS;
+}
+
+/**
+*   @brief Insertar datos en tabla masivo, antes realizar conexion a la misma.
+*   @param sql request.
+*   @param Error mensage
+*   @param Error list sql
+*   @return 1 success -1 error
+*/
+int csl_QuerySqlInsertMassive(char **sqlRequest, char **err_msg, char ***sqlList){
+
+    if(!conectionName){
+        log->error("No existe conexion con la db");
+        return csl_ERROR;
+    }
+
+    int countQuerys = countPoiterString(sqlRequest), result = 0, hasError = 0;
+    char *error_msg = 0;
+    char *error_send = (char *) malloc(sizeof(char) * 1);
+    char **error_list = (char **) malloc(sizeof(char *) * (countQuerys+1) );
+    memset(error_send, 0, strlen(error_send));
+
+    for(int i = 0; i < countQuerys; i++){
+        result = csl_QuerySqlInsert(sqlRequest[i], &error_msg);
+        if(result == csl_ERROR){
+            hasError = 1;
+            error_list[i] = (char *) malloc( sizeof(char) * strlen(sqlRequest[i]) + 1);
+            strcpy(error_list[i], sqlRequest[i]);
+            log->error(error_list[i]);
+            error_send = (char *) realloc(error_send, sizeof(char) * (strlen(error_send) + strlen(error_msg) + 1));
+            error_send[strlen(error_send) + strlen(error_msg)] = '\n';
+            strcat(error_send, error_msg);
+            log->error(error_msg);
+        }
+    }
+
+    *err_msg = error_send;
+    error_list[countQuerys] = NULL;
+    *sqlList = error_list;
+
+    if(hasError == 1){
+        return csl_ERROR;
+    }
 
     return csl_SUCCESS;
+}
+
+int countPoiterString(char** arrayString){
+    char **pointer = arrayString;
+    int count = 0;
+
+    for (int i = 0; pointer[i] != NULL; i++) {
+        count++;
+    }
+    return count;
 }
 
 /**
