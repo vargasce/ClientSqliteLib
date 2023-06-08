@@ -29,10 +29,15 @@
 #include <unistd.h>
 #include "ClientSlqliteinC.h"
 #include "Log.h"
+#include <sys/stat.h>
+#include <errno.h>
 
+#define PERMISSIONS 0777
 #define csl_ERROR -1
 #define csl_SUCCESS 1
 #define ERROR_CONECTION_NAME_INVALID 2
+#define FOLDER_DBNAME "db"
+#define FOLDER_LOGNAME "log"
 #define SYSTEM_TABLE "./db/system.db"
 #define NAMETABLES "Tables"
 
@@ -44,6 +49,7 @@ int Create_DB(char *nameDB);
 void InserNameDBtoSystem(char *nameDB);
 int callback(void *NotUsed, int argc, char **argv, char **azColName);
 void InitLog();
+void InitFolderDb();
 char** copyStringArray(char** array, int size);
 int countPoiterString(char** arrayString);
 
@@ -76,6 +82,7 @@ int csl_CreateDataBase(char *nameDB){
 
 int InitSystem(){
 
+    InitFolderDb();
 	char *err_msg;
 
 	int rc = sqlite3_open(SYSTEM_TABLE, &db);
@@ -92,14 +99,36 @@ int InitSystem(){
 	rc = sqlite3_exec(db, sqlAdd, 0, 0, &err_msg);
 
 	if(rc != SQLITE_OK){
-        //fprintf(stderr, "Failed to create table\n");
-        //fprintf(stderr, "SQL error: %s\n", err_msg);
+        log->warning(err_msg);
         sqlite3_free(err_msg);
 	}
 
 	csl_CloseConection();
 
 	return csl_SUCCESS;
+}
+
+void InitFolderDb(){
+    int result = mkdir(FOLDER_DBNAME, PERMISSIONS);
+    if (result != 0) {
+        if (errno == EEXIST) {
+            log->warning("La carpeta ya existe.");
+        } else {
+            log->error("Error al crear carpeta.");
+        }
+        printf("\tFolder : %s\n", FOLDER_DBNAME);
+    }
+
+    result = mkdir(FOLDER_LOGNAME, PERMISSIONS);
+    if (result != 0) {
+        if (errno == EEXIST) {
+            log->warning("La carpeta ya existe.");
+        } else {
+            log->error("Error al crear carpeta.");
+
+        }
+        printf("\tFolder : %s\n", FOLDER_LOGNAME);
+    }
 }
 
 int InitDataBase(char *nameDB){
@@ -447,20 +476,18 @@ void InserNameDBtoSystem(char *nameDB){
 	int rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
 
 	if(rc != SQLITE_OK){
-		printf("%s\n", sql);
-		fprintf(stderr, "Failed to Insert table\n");
-		fprintf(stderr, "SQL error: %s\n", err_msg);
+		char *err_send = "Failed to Insert table - \n";
+		strcat(err_send, err_msg);
+		log->error(err_send);
 		sqlite3_free(err_msg);
 	}
-
-	int last_id = sqlite3_last_insert_rowid(db);
-	printf("The last Id of the inserted row is %d\n", last_id);
-
+	//int last_id = sqlite3_last_insert_rowid(db);
+	//printf("The last Id of the inserted row is %d\n", last_id);
 }
 
 void clearTerminal() {
     if (system("clear") == -1) {
-        perror("Error al limpiar la terminal");
+        log->error("Error al limpiar la terminal");
         exit(EXIT_FAILURE);
     }
 }
