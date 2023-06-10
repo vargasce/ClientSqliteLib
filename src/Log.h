@@ -1,6 +1,8 @@
 #ifndef LOG_H_INCLUDED
 #define LOG_H_INCLUDED
 
+// TODO (Tauriel#1#06/10/23): Para log de error crear archivo txt de salida. Alamacenar dicho txt en capeta log creada en initSystem. ... //
+
 typedef struct {
     void (*information)(const char*);
     void (*error)(const char*);

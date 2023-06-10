@@ -53,15 +53,16 @@ void InitFolderDb();
 char** copyStringArray(char** array, int size);
 int countPoiterString(char** arrayString);
 void errorSelectRequet(char *err_msg);
-//SIN USO
-void clearTerminal();
-char *insertNameDB();
 
 //Vars global system
 sqlite3 *db = NULL;
 char *conectionName = NULL;
 response_query_sqlite *RESPONSE_QUERY = NULL;
 Log *log = NULL;
+
+// TODO (Tauriel#1#06/10/23): Crear funcion updateTable, deleteTable. Refactorizar con una funcion execute query para tambien re utilizar en insertTable.
+
+// TODO (Tauriel#1#06/10/23): Quedaron strcat mal implementado, quitarlos y corregirlos.
 
 /**
  * @brief Create db con el nombre indicado por parametro.
@@ -544,29 +545,6 @@ void InserNameDBtoSystem(char *nameDB){
 	}
 	//int last_id = sqlite3_last_insert_rowid(db);
 	//printf("The last Id of the inserted row is %d\n", last_id);
-}
-
-void clearTerminal() {
-    if (system("clear") == -1) {
-        log->error("Error al limpiar la terminal");
-        exit(EXIT_FAILURE);
-    }
-}
-
-char *insertNameDB(){
-
-	char *buffer = (char *) malloc(20);
-	char *db = ".db\0";
-
-	if (buffer==NULL)return NULL;
-
-	getchar();
-	memset(buffer,0,20);
-	fgets(buffer,15,stdin);
-	buffer[strlen(buffer) - 1] = ' ';
-	strcat(buffer,db);
-
-	return buffer;
 }
 
 char** copyStringArray(char** array, int size) {
