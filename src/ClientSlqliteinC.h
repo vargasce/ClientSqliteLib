@@ -10,6 +10,7 @@ typedef struct {
 typedef struct {
 	int success;      // 1 success, 0 error
 	Payload *payload;
+	int countData;    //cantidad de tuplas
 	char *message;
 } response_query_sqlite;
 
@@ -20,5 +21,6 @@ int csl_ListDataBase();
 int csl_CreateTable(char *sqlRequest);
 int csl_QuerySqlInsert(char *sqlRequest, char **err_msg);
 int csl_QuerySqlInsertMassive(char **sqlRequest, char **err_msg, char ***sqlList);
+int csl_QuerySqlSelectRequest(char *sqlRequest);
 void csl_FreeResponseQuery(response_query_sqlite *response);
 response_query_sqlite *csl_SelectResponse();

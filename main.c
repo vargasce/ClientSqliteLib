@@ -11,9 +11,12 @@ int main(){
 	response_query_sqlite *response = csl_SelectResponse();
 
 	if(response->success == 1){
-		for (int i = 0; i < response->payload->argc; i++) {
-			printf("%s = %s\n", response->payload->azColName[i], response->payload->argv[i] ? response->payload->argv[i] : "NULL");
-		}
+	    for (int i = 0; i < response->countData; i++) {
+            Payload payloadR = response->payload[i];
+            for (int i = 0; i < payloadR.argc; i++) {
+                printf("%s = %s\n", payloadR.azColName[i], payloadR.argv[i] ? payloadR.argv[i] : "NULL");
+            }
+        }
 	}
 
     csl_FreeResponseQuery(response);
@@ -33,7 +36,7 @@ int main(){
                         "INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 3', '30542342322' , 1);",
                         "INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 4', '30542342322' , 1);",
                         "INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 5', '30542342322' , 1);",
-                        "INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 6', '30542342 , 1);",
+                        "INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 6', '30542342322' , 1);",
                         "INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 7', '30542342322' , 1);",
                         NULL
                         };
@@ -48,6 +51,24 @@ int main(){
         printf("%s \n", error_msg);
     }
 
+    char *sqlRequest = "SELECT * FROM Company;";
+    csl_QuerySqlSelectRequest(sqlRequest);
+    response_query_sqlite *responseRequest = csl_SelectResponse();
+
+	if(responseRequest->success == 1){
+
+	    for (int i = 0; i < responseRequest->countData; i++) {
+            Payload payloadR = responseRequest->payload[i];
+            for (int i = 0; i < payloadR.argc; i++) {
+                printf("%s = %s\n", payloadR.azColName[i], payloadR.argv[i] ? payloadR.argv[i] : "NULL");
+            }
+        }
+
+	}else{
+        printf("%s \n", responseRequest->message);
+	}
+
+	csl_FreeResponseQuery(responseRequest);
 	csl_CloseConection();
     getchar();
     return 0;

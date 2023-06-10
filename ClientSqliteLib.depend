@@ -1,10 +1,10 @@
 # depslib dependency file v1.0
-1686147658 source:/home/kali/Documents/Proyect/ProyectC/CodeBloks/ClientSqliteLib/main.c
+1686433313 source:/home/kali/Documents/Proyect/ProyectC/CodeBloks/ClientSqliteLib/main.c
 	<stdio.h>
 	<stdlib.h>
 	"src/ClientSlqliteinC.h"
 
-1686154063 source:/home/kali/Documents/Proyect/ProyectC/CodeBloks/ClientSqliteLib/src/ClientSlqliteinC.c
+1686433218 source:/home/kali/Documents/Proyect/ProyectC/CodeBloks/ClientSqliteLib/src/ClientSlqliteinC.c
 	<string.h>
 	<stdio.h>
 	<stdlib.h>
@@ -15,7 +15,7 @@
 	<sys/stat.h>
 	<errno.h>
 
-1686145558 /home/kali/Documents/Proyect/ProyectC/CodeBloks/ClientSqliteLib/src/ClientSlqliteinC.h
+1686426781 /home/kali/Documents/Proyect/ProyectC/CodeBloks/ClientSqliteLib/src/ClientSlqliteinC.h
 	<sqlite3.h>
 
 1684899544 source:/home/kali/Documents/Proyect/ProyectC/CodeBloks/ClientSqliteLib/src/sqlite3.c

@@ -52,7 +52,7 @@ void InitLog();
 void InitFolderDb();
 char** copyStringArray(char** array, int size);
 int countPoiterString(char** arrayString);
-
+void errorSelectRequet(char *err_msg);
 //SIN USO
 void clearTerminal();
 char *insertNameDB();
@@ -203,18 +203,22 @@ int csl_ListDataBase(){
 	char *err_msg;
 
 	if(rc != SQLITE_OK){
-		fprintf(stderr, "Cannot open database: %s\n",sqlite3_errmsg(db));
+        err_msg = (char *) malloc(sizeof(char) * (strlen("Cannot open database : ") + strlen(sqlite3_errmsg(db) ) + 1 ));
+        sprintf(err_msg,"Cannot open database : %s", sqlite3_errmsg(db));
+		log->error(err_msg);
         sqlite3_close(db);
         return csl_ERROR;
 	}
 
 	char *sql = "SELECT * FROM Tables;";
 
+	InitPointerResponseSQL();
     rc = sqlite3_exec(db, sql, callback, 0, &err_msg);
 
     if (rc != SQLITE_OK ) {
-        fprintf(stderr, "Failed to select data\n");
-        fprintf(stderr, "SQL error: %s\n", err_msg);
+        err_msg = (char *) malloc(sizeof(char) * (strlen("Failed to select data. SQL error: \n") + strlen(sqlite3_errmsg(db) ) + 1 ));
+        sprintf(err_msg,"Failed to select data. SQL error: \n%s", sqlite3_errmsg(db));
+		log->error(err_msg);
 		csl_CloseConection();
         return csl_ERROR;
     }
@@ -227,18 +231,38 @@ int csl_ListDataBase(){
 int callback(void *NotUsed, int argc, char **argv, char **azColName){
 
     NotUsed = 0;
-    RESPONSE_QUERY = (response_query_sqlite*) malloc(sizeof(response_query_sqlite));
-    RESPONSE_QUERY->payload = (Payload *) malloc(sizeof(Payload));
-    RESPONSE_QUERY->payload->argv = (char **) malloc(sizeof(argv));
-    RESPONSE_QUERY->payload->azColName = (char **) malloc(sizeof(azColName));
+    RESPONSE_QUERY->countData ++;
 
-    RESPONSE_QUERY->message = NULL;
-    RESPONSE_QUERY->success = csl_SUCCESS;
-    RESPONSE_QUERY->payload->argc = argc;
-    RESPONSE_QUERY->payload->argv = copyStringArray(argv, argc);
-    RESPONSE_QUERY->payload->azColName = copyStringArray(azColName, argc);
+    RESPONSE_QUERY->payload = (Payload *) realloc(RESPONSE_QUERY->payload, sizeof(Payload) * RESPONSE_QUERY->countData);
+    RESPONSE_QUERY->payload[RESPONSE_QUERY->countData - 1].argv = (char **) malloc(sizeof(argv));
+    RESPONSE_QUERY->payload[RESPONSE_QUERY->countData - 1].azColName = (char **) malloc(sizeof(azColName));
+    Payload *newPayload = &(RESPONSE_QUERY->payload[RESPONSE_QUERY->countData - 1]);
+
+    newPayload->argc = argc;
+    newPayload->argv = copyStringArray(argv, argc);
+    newPayload->azColName = copyStringArray(azColName, argc);
 
     return 0;
+}
+
+void InitPointerResponseSQL(){
+    if(RESPONSE_QUERY != NULL){
+        csl_FreeResponseQuery(RESPONSE_QUERY);
+    }
+    RESPONSE_QUERY = (response_query_sqlite*) malloc(sizeof(response_query_sqlite));
+    RESPONSE_QUERY->payload = (Payload *) malloc(sizeof(Payload));
+    RESPONSE_QUERY->message = NULL;
+    RESPONSE_QUERY->success = csl_SUCCESS;
+    RESPONSE_QUERY->countData = 0;
+}
+
+void errorSelectRequet(char *err_msg){
+    RESPONSE_QUERY = (response_query_sqlite*) malloc(sizeof(response_query_sqlite));
+    RESPONSE_QUERY->payload = NULL;
+    RESPONSE_QUERY->message = (char *) malloc(sizeof(char) * strlen(err_msg));
+    strcpy(RESPONSE_QUERY->message, err_msg);
+    RESPONSE_QUERY->success = csl_ERROR;
+    RESPONSE_QUERY->countData = 0;
 }
 
 /**
@@ -319,6 +343,43 @@ int csl_QuerySqlInsert(char *sqlRequest, char **err){
 
     if(rc != SQLITE_OK){
         *err = err_msg;
+        return csl_ERROR;
+    }
+
+    return csl_SUCCESS;
+}
+
+/**
+*   @brief Insertar datos en tabla, antes realizar conexion a la misma.
+            llamar 'csl_SelectResponse()' para obtener datos.
+*   @param sql request.
+*   @param Error mensage
+*   @return 1 success -1 error
+*/
+int csl_QuerySqlSelectRequest(char *sqlRequest){
+
+    if(!conectionName){
+        log->error("No existe conexion con la db");
+        return csl_ERROR;
+    }
+
+    char *err_msg = 0;
+    int rc = sqlite3_open(conectionName, &db);
+
+    if(rc != SQLITE_OK){
+        err_msg = "Failed conection db :";
+        strcat( err_msg, sqlite3_errmsg(db));
+        log->error(err_msg);
+        return csl_ERROR;
+    }
+
+    InitPointerResponseSQL();
+    rc = sqlite3_exec(db, sqlRequest, callback, 0, &err_msg);
+
+    if (rc != SQLITE_OK ) {
+        char *err_reponse = (char *) malloc(sizeof(char) * (strlen("Failed to select data. \n SQL error : \n") + strlen(err_msg)));
+        sprintf(err_reponse, "Failed to select data. \n SQL error : \n %s",err_msg);
+        errorSelectRequet(err_reponse);
         return csl_ERROR;
     }
 
@@ -522,11 +583,21 @@ char** copyStringArray(char** array, int size) {
  * @return void.
 */
 void csl_FreeResponseQuery(response_query_sqlite *response){
-    response->payload->argc = -9;
-    response->payload->argv = NULL;
-    response->payload->azColName = NULL;
-    free(response->payload);
-	free(response);
+    if(response->countData > 0){
+        for (int i = 0; i < response->countData; i++) {
+            Payload payload = response->payload[i];
+            for (int j = 0; j < payload.argc; j++) {
+                free(payload.argv[j]);
+                free(payload.azColName[j]);
+            }
+            free(payload.argv);
+            free(payload.azColName);
+        }
+        free(response->payload);
+    }
+
+	free(response->message);
+	response->countData = 0;
 }
 
 void InitLog(){
