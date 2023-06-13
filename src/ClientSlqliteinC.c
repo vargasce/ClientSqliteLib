@@ -31,6 +31,7 @@
 #include "Log.h"
 #include <sys/stat.h>
 #include <errno.h>
+#include <stdarg.h>
 
 #define PERMISSIONS 0777
 #define csl_ERROR -1
@@ -53,6 +54,8 @@ void InitFolderDb();
 char** copyStringArray(char** array, int size);
 int countPoiterString(char** arrayString);
 void errorSelectRequet(char *err_msg);
+int ExecuteQuery(char *sqlRequest, char **err_msg);
+char *BuildSqlRequest(const char* formater, char **err_msg, va_list args);
 
 //Vars global system
 sqlite3 *db = NULL;
@@ -351,6 +354,43 @@ int csl_QuerySqlInsert(char *sqlRequest, char **err){
 }
 
 /**
+*   @brief Insertar datos en tabla con template
+*   @param sql Format.
+*   @param Error mensage
+*   @param Cantidad parametros
+*   @param Lista argumentos.
+*   @return 1 success -1 error
+*/
+int csl_QuerySqlInsertFormater(char *format, char **err_msg, int countFormater, ...){
+    va_list args1, args2;
+    va_start(args1, countFormater);
+    va_copy(args2, args1);
+    char *error_msg = 0;
+
+    char *sql = BuildSqlRequest(format,&error_msg, args2);
+
+    va_end(args2);
+    va_end(args1);
+
+    if(sql == NULL){
+        *err_msg = error_msg;
+        log->error(error_msg);
+        return csl_ERROR;
+    }
+
+    log->information(sql);
+    int result = csl_QuerySqlInsert(sql, &error_msg);
+
+    if(result == csl_ERROR){
+        *err_msg = error_msg;
+        log->error(error_msg);
+        return csl_ERROR;
+    }
+
+    return csl_SUCCESS;
+}
+
+/**
 *   @brief Insertar datos en tabla, antes realizar conexion a la misma.
             llamar 'csl_SelectResponse()' para obtener datos.
 *   @param sql request.
@@ -358,34 +398,71 @@ int csl_QuerySqlInsert(char *sqlRequest, char **err){
 *   @return 1 success -1 error
 */
 int csl_QuerySqlSelectRequest(char *sqlRequest){
+    char *msg_response = 0;
+    int result = ExecuteQuery(sqlRequest, &msg_response);
+    return result;
+}
+
+/**
+*   @brief Update data
+*   @param sql request.
+*   @return 1 success -1 error
+*/
+int csl_QuerySqlUpdateRequest(char *sqlRequest){
+    char *msg_response = 0;
+    int result = ExecuteQuery(sqlRequest, &msg_response);
+    return result;
+}
+
+/**
+*   @brief Delete data
+*   @param sql request.
+*   @return 1 success -1 error
+*/
+int csl_QuerySqlDeleteRequest(char *sqlRequest){
+    char *msg_response = 0;
+    int result = ExecuteQuery(sqlRequest, &msg_response);
+    return result;
+}
+
+/**
+*   @brief Executa sentencia sql, retorna msg result.
+*   @param sql request.
+*   @param Error mensage return
+*   @return 1 success -1 error
+*/
+int ExecuteQuery(char *sqlRequest, char **err_msg){
 
     if(!conectionName){
-        log->error("No existe conexion con la db");
+        char *err = "No existe conexion con la db.";
+        *err_msg = err;
         return csl_ERROR;
     }
 
-    char *err_msg = 0;
+    char *error_msg = 0;
     int rc = sqlite3_open(conectionName, &db);
 
     if(rc != SQLITE_OK){
-        err_msg = "Failed conection db :";
-        strcat( err_msg, sqlite3_errmsg(db));
-        log->error(err_msg);
+        error_msg = (char *) malloc( sizeof(char) * (strlen("Failed conection db : ") + strlen(sqlite3_errmsg(db)) + 1 ));
+        sprintf(error_msg, "Failed conection db : %s", sqlite3_errmsg(db));
+        *err_msg = error_msg;
         return csl_ERROR;
     }
 
     InitPointerResponseSQL();
-    rc = sqlite3_exec(db, sqlRequest, callback, 0, &err_msg);
+    rc = sqlite3_exec(db, sqlRequest, callback, 0, &error_msg);
 
     if (rc != SQLITE_OK ) {
-        char *err_reponse = (char *) malloc(sizeof(char) * (strlen("Failed to select data. \n SQL error : \n") + strlen(err_msg)));
-        sprintf(err_reponse, "Failed to select data. \n SQL error : \n %s",err_msg);
+        char *err_reponse = (char *) malloc(sizeof(char) * (strlen("Failed request. \n SQL error :  ") + strlen(error_msg)));
+        sprintf(err_reponse, "Failed request. \n SQL error : %s",error_msg);
         errorSelectRequet(err_reponse);
+        *err_msg = err_reponse;
         return csl_ERROR;
     }
 
     return csl_SUCCESS;
 }
+
 
 /**
 *   @brief Insertar datos en tabla masivo, antes realizar conexion a la misma.
@@ -576,6 +653,41 @@ void csl_FreeResponseQuery(response_query_sqlite *response){
 
 	free(response->message);
 	response->countData = 0;
+}
+
+/**
+ * @brief Construye y formatea sql.
+ * @param sql model formater.
+ * @param error mensaje return.
+ * @param ... list params.
+ * @return char sql.
+*/
+char *BuildSqlRequest(const char* formater, char **err_msg, va_list args){
+
+    va_list args_copy;
+    va_copy(args_copy, args);
+
+    int length = vsnprintf(NULL, 0, formater, args_copy);
+    if (length < 0) {
+        *err_msg = "Error en la cantidad a formatear.\n";
+        return NULL;
+    }
+
+    char* buffer = (char*)malloc((length + 1) * sizeof(char));
+    if (buffer == NULL) {
+        *err_msg = "Error solicitar memoria.\n";
+        return NULL;
+    }
+
+    int result = vsnprintf(buffer, length + 1, formater, args);
+
+    if (result < 0) {
+        *err_msg = "Error al realizar el formato.\n";
+        free(buffer);
+        return NULL;
+    }
+
+    return buffer;
 }
 
 void InitLog(){

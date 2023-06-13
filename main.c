@@ -31,6 +31,8 @@ int main(){
 
     char *sql = "INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 1', '30542342322' , 1);";
 
+    char *sqlFormater = "INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('%s', '%s', %d);";
+
     char *sqlMassive[] = {
                         "INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 2', '30542342322' , 1);",
                         "INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 3', '30542342322' , 1);",
@@ -40,6 +42,10 @@ int main(){
                         "INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 7', '30542342322' , 1);",
                         NULL
                         };
+
+    if(csl_QuerySqlInsertFormater(sqlFormater, &error_msg, 3, "Company 312313", "3409429321", 10) != 1){
+        printf("%s\n", error_msg);
+    }
 
     if( csl_QuerySqlInsert(sql, &error_msg) != 1){
         fprintf(stderr,"Error : %s \n", error_msg);
@@ -69,6 +75,21 @@ int main(){
 	}
 
 	csl_FreeResponseQuery(responseRequest);
+
+	char *sql_update = "UPDATE Company set CompanyName = 'Company 100' WHERE Id = 4;";
+	int responseUpdate = csl_QuerySqlUpdateRequest(sql_update);
+	response_query_sqlite *responseRequestUpdate = csl_SelectResponse();
+
+	if(responseUpdate != 1){
+        printf("update : %s", responseRequestUpdate->message);
+	}
+
+	if(responseRequestUpdate->success != 1){
+        printf("Otra manera de validar el error.\n Error : %s \n", responseRequestUpdate->message);
+	}
+
+    csl_FreeResponseQuery(responseRequestUpdate);
+
 	csl_CloseConection();
     getchar();
     return 0;
