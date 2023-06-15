@@ -354,7 +354,7 @@ int csl_QuerySqlInsert(char *sqlRequest, char **err){
         char *msj = (char *) malloc(sizeof(char) * (strlen("Failed conection db ") + strlen(sqlite3_errmsg(db)) + 1 ));
         sprintf(msj, "Failed conection db : %s", sqlite3_errmsg(db));
         log->error(msj);
-        free(msj);
+        *err = msj;
         return csl_ERROR;
     }
 
@@ -513,7 +513,6 @@ int csl_QuerySqlInsertMassive(char **sqlRequest, char **err_msg, char ***sqlList
             error_send = (char *) realloc(error_send, sizeof(char) * (strlen(error_send) + strlen(error_msg) + 1));
             error_send[strlen(error_send) + strlen(error_msg)] = '\n';
             strcat(error_send, error_msg);
-            log->error(error_msg);
         }
     }
 

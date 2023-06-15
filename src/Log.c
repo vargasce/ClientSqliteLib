@@ -29,13 +29,13 @@ void informationFunc(const char* message) {
     char *timeNow = GetTimeNow();
     sprintf(messageSend,"[Information] [%s] %s\n",timeNow, message);
     SaveLog(messageSend);
-    printf("%s \n", messageSend);
 }
 
 void errorFunc(const char* message) {
     char *messageSend = (char *) malloc(sizeof(char) * (strlen(message) + strlen("[Error] ") + SIZETIME) );
     char *timeNow = GetTimeNow();
-    sprintf(messageSend,"[Error] [%s] %s \n", message);
+    sprintf(messageSend,"[Error] [%s] %s \n",timeNow, message);
+    printf("%s \n", messageSend);
     SaveLog(messageSend);
 }
 
@@ -50,8 +50,7 @@ void debugFunc(const char* message) {
     char *messageSend = (char *) malloc(sizeof(char) * (strlen(message) + strlen("[Debug] ") + SIZETIME) );
     char *timeNow = GetTimeNow();
     sprintf(messageSend,"[Debug] [%s] %s \n",timeNow, message);
-    SaveLog(messageSend);
-    printf("[Debug] %s\n", message);
+    printf("[Debug] %s\n", messageSend);
 }
 
 void SaveLog(char *message){

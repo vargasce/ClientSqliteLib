@@ -34,3 +34,24 @@
 [Information] [2023-06-15 01:31:10] Succes create conexion db.
 [Warning] [2023-06-15 01:31:10] table Company already exists 
 [Information] [2023-06-15 01:31:10] INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 312313', '3409429321', 10);
+[Warning] [2023-06-15 09:48:31] La carpeta DB ya existe. 
+[Warning] [2023-06-15 09:48:31] La carpeta LOG ya existe. 
+[Warning] [2023-06-15 09:48:31] table Tables already exists 
+[Information] [2023-06-15 09:48:31] Succes create conexion db.
+[Warning] [2023-06-15 09:48:31] table Company already exists 
+[Error] [near ";": syntax error] [Error] [%s] %s 
+[Error] [INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 7', '30542342322' , ;] [Error] [%s] %s 
+[Warning] [2023-06-15 09:54:45] La carpeta DB ya existe. 
+[Warning] [2023-06-15 09:54:45] La carpeta LOG ya existe. 
+[Warning] [2023-06-15 09:54:45] table Tables already exists 
+[Information] [2023-06-15 09:54:45] Succes create conexion db.
+[Warning] [2023-06-15 09:54:45] table Company already exists 
+[Error] [2023-06-15 09:54:45] [Error] [2023-06-15 09:54:45]  
+[Error] [2023-06-15 09:54:45] [Error] [2023-06-15 09:54:45] [Error] [2023-06-15 09:54:45]  
+[Warning] [2023-06-15 09:57:24] La carpeta DB ya existe. 
+[Warning] [2023-06-15 09:57:24] La carpeta LOG ya existe. 
+[Warning] [2023-06-15 09:57:24] table Tables already exists 
+[Information] [2023-06-15 09:57:24] Succes create conexion db.
+[Warning] [2023-06-15 09:57:24] table Company already exists 
+[Error] [2023-06-15 09:57:24] near ";": syntax error 
+[Error] [2023-06-15 09:57:24] INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 7', '30542342322' , ; 
