@@ -22,3 +22,15 @@
 [Information] [2023-06-14 22:49:06] Succes create conexion db.
 [Warning] [2023-06-14 22:49:06] table Company already exists 
 [Information] [2023-06-14 22:49:06] INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 312313', '3409429321', 10);
+[Warning] [2023-06-15 01:29:07] La carpeta ya existe. 
+[Warning] [2023-06-15 01:29:07] La carpeta ya existe. 
+[Warning] [2023-06-15 01:29:07] table Tables already exists 
+[Information] [2023-06-15 01:29:07] Succes create conexion db.
+[Warning] [2023-06-15 01:29:07] table Company already exists 
+[Information] [2023-06-15 01:29:07] INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 312313', '3409429321', 10);
+[Warning] [2023-06-15 01:31:10] La carpeta DB ya existe. 
+[Warning] [2023-06-15 01:31:10] La carpeta LOG ya existe. 
+[Warning] [2023-06-15 01:31:10] table Tables already exists 
+[Information] [2023-06-15 01:31:10] Succes create conexion db.
+[Warning] [2023-06-15 01:31:10] table Company already exists 
+[Information] [2023-06-15 01:31:10] INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 312313', '3409429321', 10);

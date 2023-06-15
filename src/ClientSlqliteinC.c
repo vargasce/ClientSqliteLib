@@ -92,8 +92,11 @@ int InitSystem(){
 	int rc = sqlite3_open(SYSTEM_TABLE, &db);
 
 	if(rc != SQLITE_OK){
-		fprintf(stderr, "Cannot open database: %s\n",sqlite3_errmsg(db));
+        char *err_message = (char *) malloc(sizeof(char) * (strlen("Cannot open database: %s\n") + strlen(sqlite3_errmsg(db)) + 1));
+        sprintf(err_message, "Cannot open database: %s", sqlite3_errmsg(db));
+		log->error(err_message);
         sqlite3_close(db);
+        free(err_message);
         return csl_ERROR;
 	}
 
@@ -116,9 +119,9 @@ void InitFolderDb(){
     int result = mkdir(FOLDER_DBNAME, PERMISSIONS);
     if (result != 0) {
         if (errno == EEXIST) {
-            log->warning("La carpeta ya existe.");
+            log->warning("La carpeta DB ya existe.");
         } else {
-            log->error("Error al crear carpeta.");
+            log->error("Error al crear carpeta DB.");
         }
         printf("\tFolder : %s\n", FOLDER_DBNAME);
     }
@@ -126,9 +129,9 @@ void InitFolderDb(){
     result = mkdir(FOLDER_LOGNAME, PERMISSIONS);
     if (result != 0) {
         if (errno == EEXIST) {
-            log->warning("La carpeta ya existe.");
+            log->warning("La carpeta LOG ya existe.");
         } else {
-            log->error("Error al crear carpeta.");
+            log->error("Error al crear carpeta LOG.");
 
         }
         printf("\tFolder : %s\n", FOLDER_LOGNAME);
@@ -143,8 +146,11 @@ int InitDataBase(char *nameDB){
 	int rc = sqlite3_open(SYSTEM_TABLE, &db);
 
 	if(rc != SQLITE_OK){
-		fprintf(stderr, "Cannot open database: %s\n",sqlite3_errmsg(db));
+        char *err_message = (char *) malloc(sizeof(char) * (strlen("Cannot open database: %s\n") + strlen(sqlite3_errmsg(db)) + 1));
+        sprintf(err_message, "Cannot open database: %s", sqlite3_errmsg(db));
+		log->error(err_message);
         sqlite3_close(db);
+        free(err_message);
         return csl_ERROR;
 	}
 
@@ -154,9 +160,12 @@ int InitDataBase(char *nameDB){
 	rc = sqlite3_prepare_v2(db, sqlExisteDB, -1, &res, 0);
 
     if (rc != SQLITE_OK) {
-        fprintf(stderr, "Failed to fetch data: %s\n", sqlite3_errmsg(db));
+        char *err_message = (char *) malloc(sizeof(char) * (strlen("Failed to fetch data: %s") + strlen(sqlite3_errmsg(db)) + 1));
+        sprintf(err_message, "Failed to fetch data: %s", sqlite3_errmsg(db));
+		log->error(err_message);
         csl_CloseConection();
         sqlite3_free(res);
+        free(err_message);
         return csl_ERROR;
     }
 
@@ -185,8 +194,11 @@ int Create_DB(char *nameDB){
 	int rc = sqlite3_open(nameDB, &db);
 
 	if(rc != SQLITE_OK){
-		fprintf(stderr, "Cannot open database: %s\n",sqlite3_errmsg(db));
+        char *err_message = (char *) malloc(sizeof(char) * (strlen("Cannot open database: %s\n") + strlen(sqlite3_errmsg(db)) + 1));
+        sprintf(err_message, "Cannot open database: %s", sqlite3_errmsg(db));
+		log->error(err_message);
         sqlite3_close(db);
+        free(err_message);
         return csl_ERROR;
 	}
 
@@ -211,6 +223,7 @@ int csl_ListDataBase(){
         sprintf(err_msg,"Cannot open database : %s", sqlite3_errmsg(db));
 		log->error(err_msg);
         sqlite3_close(db);
+        free(err_msg);
         return csl_ERROR;
 	}
 
@@ -295,7 +308,7 @@ void csl_CloseConection(){
 int csl_CreateTable(char *sqlRequest){
 
     if(!conectionName){
-        log->error("No existe conexion con la db");
+        log->error("Not exist conection db");
         return csl_ERROR;
     }
 
@@ -303,9 +316,10 @@ int csl_CreateTable(char *sqlRequest){
     int rc = sqlite3_open(conectionName, &db);
 
     if(rc != SQLITE_OK){
-        char *msj = "Failed conection db ";
-        strcat( msj, sqlite3_errmsg(db));
+        char *msj = (char *) malloc(sizeof(char) * (strlen("Failed conection db ") + strlen(sqlite3_errmsg(db)) + 1 ));
+        sprintf(msj, "Failed conection db : %s", sqlite3_errmsg(db));
         log->error(msj);
+        free(msj);
         return csl_ERROR;
     }
 
@@ -329,7 +343,7 @@ int csl_CreateTable(char *sqlRequest){
 int csl_QuerySqlInsert(char *sqlRequest, char **err){
 
     if(!conectionName){
-        log->error("No existe conexion con la db");
+        log->error("Not exist conection db");
         return csl_ERROR;
     }
 
@@ -337,9 +351,10 @@ int csl_QuerySqlInsert(char *sqlRequest, char **err){
     int rc = sqlite3_open(conectionName, &db);
 
     if(rc != SQLITE_OK){
-        char *msj = "Failed conection db ";
-        strcat( msj, sqlite3_errmsg(db));
+        char *msj = (char *) malloc(sizeof(char) * (strlen("Failed conection db ") + strlen(sqlite3_errmsg(db)) + 1 ));
+        sprintf(msj, "Failed conection db : %s", sqlite3_errmsg(db));
         log->error(msj);
+        free(msj);
         return csl_ERROR;
     }
 
@@ -347,6 +362,7 @@ int csl_QuerySqlInsert(char *sqlRequest, char **err){
 
     if(rc != SQLITE_OK){
         *err = err_msg;
+        log->error(err_msg);
         return csl_ERROR;
     }
 
@@ -378,7 +394,6 @@ int csl_QuerySqlInsertFormater(char *format, char **err_msg, int countFormater, 
         return csl_ERROR;
     }
 
-    log->information(sql);
     int result = csl_QuerySqlInsert(sql, &error_msg);
 
     if(result == csl_ERROR){
@@ -434,7 +449,9 @@ int csl_QuerySqlDeleteRequest(char *sqlRequest){
 int ExecuteQuery(char *sqlRequest, char **err_msg){
 
     if(!conectionName){
-        char *err = "No existe conexion con la db.";
+        char *err = (char *) malloc(sizeof(char) * (strlen("Not exist conection db ") + strlen(sqlite3_errmsg(db)) + 1 ));
+        sprintf(err, "Not exist conection db : %s", sqlite3_errmsg(db));
+        log->error(err);
         *err_msg = err;
         return csl_ERROR;
     }
@@ -445,6 +462,7 @@ int ExecuteQuery(char *sqlRequest, char **err_msg){
     if(rc != SQLITE_OK){
         error_msg = (char *) malloc( sizeof(char) * (strlen("Failed conection db : ") + strlen(sqlite3_errmsg(db)) + 1 ));
         sprintf(error_msg, "Failed conection db : %s", sqlite3_errmsg(db));
+        log->error(error_msg);
         *err_msg = error_msg;
         return csl_ERROR;
     }
@@ -457,6 +475,7 @@ int ExecuteQuery(char *sqlRequest, char **err_msg){
         sprintf(err_reponse, "Failed request. \n SQL error : %s",error_msg);
         errorSelectRequet(err_reponse);
         *err_msg = err_reponse;
+        log->error(err_reponse);
         return csl_ERROR;
     }
 
@@ -474,7 +493,7 @@ int ExecuteQuery(char *sqlRequest, char **err_msg){
 int csl_QuerySqlInsertMassive(char **sqlRequest, char **err_msg, char ***sqlList){
 
     if(!conectionName){
-        log->error("No existe conexion con la db");
+        log->error("Not exist conection db");
         return csl_ERROR;
     }
 
@@ -537,7 +556,9 @@ int csl_ConectionDB(char *nameDB){
 	rc = sqlite3_prepare_v2(db, sqlExisteDB, -1, &res, 0);
 
     if (rc != SQLITE_OK) {
-        fprintf(stderr, "Failed to fetch data: %s\n", sqlite3_errmsg(db));
+        char *err_message = (char *) malloc(sizeof(char) * (strlen("Failed to fetch data: %s") + strlen(sqlite3_errmsg(db)) + 1));
+        sprintf(err_message, "Failed to fetch data: %s", sqlite3_errmsg(db));
+        log->error(err_message);
         csl_CloseConection();
         sqlite3_free(res);
         return csl_ERROR;
@@ -564,7 +585,9 @@ int csl_ConectionDB(char *nameDB){
 	strcpy(conectionName, nameDB);
 
 	if(rc != SQLITE_OK){
-		fprintf(stderr, "Cannot open database: %s\n",sqlite3_errmsg(db));
+        char *err_message = (char *) malloc(sizeof(char) * ( strlen("Cannot open database: %s\n") + strlen(sqlite3_errmsg(db)) + 1 ));
+        sprintf(err_message, "Cannot open database: %s\n", sqlite3_errmsg(db));
+		log->error(err_message);
 		csl_CloseConection();
 		return csl_ERROR;
 	}
