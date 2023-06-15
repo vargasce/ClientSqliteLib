@@ -13,6 +13,7 @@
 #include "Log.h"
 #include <stdio.h>
 #include <stdlib.h>
+#define SIZETIME 70
 
 Log *CreateLog() {
     Log* log = (Log*) malloc(sizeof(Log));
@@ -24,17 +25,52 @@ Log *CreateLog() {
 }
 
 void informationFunc(const char* message) {
-    printf("[Information] %s\n", message);
+    char *messageSend = (char *) malloc(sizeof(char) * (strlen(message) + strlen("[Information] ") + SIZETIME) );
+    char *timeNow = GetTimeNow();
+    sprintf(messageSend,"[Information] [%s] %s\n",timeNow, message);
+    SaveLog(messageSend);
+    printf("%s \n", messageSend);
 }
 
 void errorFunc(const char* message) {
-    fprintf(stderr, "[Error] %s \n", message);
+    char *messageSend = (char *) malloc(sizeof(char) * (strlen(message) + strlen("[Error] ") + SIZETIME) );
+    char *timeNow = GetTimeNow();
+    sprintf(messageSend,"[Error] [%s] %s \n", message);
+    SaveLog(messageSend);
 }
 
 void warningFunc(const char* message) {
-    printf("[Warning] %s\n", message);
+    char *messageSend = (char *) malloc(sizeof(char) * (strlen(message) + strlen("[Warning] ") + SIZETIME) );
+    char *timeNow = GetTimeNow();
+    sprintf(messageSend,"[Warning] [%s] %s \n",timeNow, message);
+    SaveLog(messageSend);
 }
 
 void debugFunc(const char* message) {
+    char *messageSend = (char *) malloc(sizeof(char) * (strlen(message) + strlen("[Debug] ") + SIZETIME) );
+    char *timeNow = GetTimeNow();
+    sprintf(messageSend,"[Debug] [%s] %s \n",timeNow, message);
+    SaveLog(messageSend);
     printf("[Debug] %s\n", message);
 }
+
+void SaveLog(char *message){
+    FILE *archivo = fopen(ARCHIVO, "a+");
+    if (archivo != NULL) {
+        fputs(message, archivo);
+        fclose(archivo);
+    }
+}
+
+char *GetTimeNow(){
+
+    time_t t = time(NULL);
+    struct tm tiempoLocal = *localtime(&t);
+    static char fechaHora[SIZETIME];
+    char *formato = "%Y-%m-%d %H:%M:%S";
+
+    int bytesEscritos = strftime(fechaHora, sizeof fechaHora, formato, &tiempoLocal);
+
+    return fechaHora;
+}
+

@@ -1,7 +1,9 @@
 #ifndef LOG_H_INCLUDED
 #define LOG_H_INCLUDED
 
-// TODO (Tauriel#1#06/10/23): Para log de error crear archivo txt de salida. Alamacenar dicho txt en capeta log creada en initSystem. ... //
+#define ARCHIVO "./log/losg.txt"
+#include <string.h>
+#include <time.h>
 
 typedef struct {
     void (*information)(const char*);
@@ -14,6 +16,8 @@ void informationFunc(const char* message);
 void errorFunc(const char* message);
 void warningFunc(const char* message);
 void debugFunc(const char* message);
+void SaveLog(char *message);
+char *GetTimeNow();
 Log *CreateLog();
 
 #endif // LOG_H_INCLUDED

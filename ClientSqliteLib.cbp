@@ -51,6 +51,13 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/ClientSlqliteinC.h" />
+		<Unit filename="src/Log.c">
+			<Option compilerVar="CC" />
+			<Option target="staticsLib" />
+		</Unit>
+		<Unit filename="src/Log.h">
+			<Option target="staticsLib" />
+		</Unit>
 		<Unit filename="src/sqlite3.c">
 			<Option compilerVar="CC" />
 		</Unit>

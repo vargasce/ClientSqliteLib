@@ -1,0 +1,24 @@
+[Warning] [2023-06-14 22:45:00] La carpeta ya existe. 
+[Warning] [2023-06-14 22:45:16] La carpeta ya existe. 
+[Warning] [2023-06-14 22:45:19] table Tables already exists 
+[Information] [2023-06-14 22:45:46] Succes create conexion db.
+[Warning] [2023-06-14 22:47:35] La carpeta ya existe. 
+[Warning] [2023-06-14 22:47:35] La carpeta ya existe. 
+[Warning] [2023-06-14 22:47:35] table Tables already exists 
+[Information] [2023-06-14 22:47:39] Succes create conexion db.
+[Warning] [2023-06-14 22:47:39] table Company already exists 
+[Information] [2023-06-14 22:47:39] INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 312313', '3409429321', 10);
+[Information] [2023-06-14 22:47:39] Informacion test
+[Information] [2023-06-14 22:47:39] Informacion test
+[Information] [2023-06-14 22:47:39] Informacion test
+[Information] [2023-06-14 22:47:39] Informacion test
+[Information] [2023-06-14 22:47:39] Informacion test
+[Information] [2023-06-14 22:47:39] Informacion test
+[Information] [2023-06-14 22:47:39] Informacion test
+[Information] [2023-06-14 22:47:39] Informacion test
+[Warning] [2023-06-14 22:49:06] La carpeta ya existe. 
+[Warning] [2023-06-14 22:49:06] La carpeta ya existe. 
+[Warning] [2023-06-14 22:49:06] table Tables already exists 
+[Information] [2023-06-14 22:49:06] Succes create conexion db.
+[Warning] [2023-06-14 22:49:06] table Company already exists 
+[Information] [2023-06-14 22:49:06] INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 312313', '3409429321', 10);
