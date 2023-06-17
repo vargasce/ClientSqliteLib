@@ -13,7 +13,7 @@
 #include "Log.h"
 #include <stdio.h>
 #include <stdlib.h>
-#define SIZETIME 70
+#include <stdarg.h>
 
 Log *CreateLog() {
     Log* log = (Log*) malloc(sizeof(Log));
@@ -46,11 +46,39 @@ void warningFunc(const char* message) {
     SaveLog(messageSend);
 }
 
-void debugFunc(const char* message) {
-    char *messageSend = (char *) malloc(sizeof(char) * (strlen(message) + strlen("[Debug] ") + SIZETIME) );
+void debugFunc(char *stringFormaterDebug, int countFormater, ...) {
+    va_list args1, args2;
+    va_start(args1, countFormater);
+    va_copy(args2, args1);
+
+    int length = vsnprintf(NULL, 0, stringFormaterDebug, args2);
+    if (length < 0) {
+        printf("[LOG->DEBUG] Error en la cantidad a formatear.\n");
+        return NULL;
+    }
+
+    char* buffer = (char*)malloc((length + 1) * sizeof(char));
+    if (buffer == NULL) {
+        printf("[LOG->DEBUG] Error solicitar memoria\n");
+        return NULL;
+    }
+
+    int resultFormater = vsnprintf(buffer, length + 1, stringFormaterDebug, args1);
+
+    if (resultFormater < 0) {
+    printf("[LOG->DEBUG] Error al realizar el formato.\n");
+        free(buffer);
+        return NULL;
+    }
+
+    va_end(args2);
+    va_end(args1);
+
+    char *messageSend = (char *) malloc(sizeof(char) * (strlen(buffer) + strlen("[Debug] ") + SIZETIME) );
     char *timeNow = GetTimeNow();
-    sprintf(messageSend,"[Debug] [%s] %s \n",timeNow, message);
-    printf("[Debug] %s\n", messageSend);
+    sprintf(messageSend,"[Debug] [%s] %s \n",timeNow, buffer);
+    printf("%s", messageSend);
+    SaveLog(messageSend);
 }
 
 void SaveLog(char *message){

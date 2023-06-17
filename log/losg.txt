@@ -55,3 +55,60 @@
 [Warning] [2023-06-15 09:57:24] table Company already exists 
 [Error] [2023-06-15 09:57:24] near ";": syntax error 
 [Error] [2023-06-15 09:57:24] INSERT INTO Company (CompanyName, CompanyLegalID, CompanyStatusId) VALUES('Company 7', '30542342322' , ; 
+[Warning] [2023-06-17 04:16:50] La carpeta DB ya existe. 
+[Warning] [2023-06-17 04:16:50] La carpeta LOG ya existe. 
+[Warning] [2023-06-17 04:16:50] table Tables already exists 
+[Warning] [2023-06-17 04:17:39] La carpeta DB ya existe. 
+[Warning] [2023-06-17 04:17:39] La carpeta LOG ya existe. 
+[Warning] [2023-06-17 04:17:39] table Tables already exists 
+[Warning] [2023-06-17 04:18:17] La carpeta DB ya existe. 
+[Warning] [2023-06-17 04:18:17] La carpeta LOG ya existe. 
+[Warning] [2023-06-17 04:18:17] table Tables already exists 
+[Warning] [2023-06-17 04:18:50] La carpeta DB ya existe. 
+[Warning] [2023-06-17 04:18:50] La carpeta LOG ya existe. 
+[Warning] [2023-06-17 04:18:50] table Tables already exists 
+[Warning] [2023-06-17 04:19:55] La carpeta DB ya existe. 
+[Warning] [2023-06-17 04:19:55] La carpeta LOG ya existe. 
+[Warning] [2023-06-17 04:19:55] table Tables already exists 
+[Information] [2023-06-17 04:20:24] Succes create conexion db.
+[Warning] [2023-06-17 04:20:24] table Company already exists 
+[Warning] [2023-06-17 04:22:15] La carpeta DB ya existe. 
+[Warning] [2023-06-17 04:22:15] La carpeta LOG ya existe. 
+[Warning] [2023-06-17 04:22:15] table Tables already exists 
+[Warning] [2023-06-17 04:23:16] La carpeta DB ya existe. 
+[Warning] [2023-06-17 04:23:16] La carpeta LOG ya existe. 
+[Warning] [2023-06-17 04:23:16] table Tables already exists 
+[Warning] [2023-06-17 04:25:39] La carpeta DB ya existe. 
+[Warning] [2023-06-17 04:25:39] La carpeta LOG ya existe. 
+[Warning] [2023-06-17 04:25:39] table Tables already exists 
+[Information] [2023-06-17 04:25:42] Succes create conexion db.
+[Warning] [2023-06-17 04:25:42] table Company already exists 
+[Warning] [2023-06-17 04:26:04] La carpeta DB ya existe. 
+[Warning] [2023-06-17 04:26:04] La carpeta LOG ya existe. 
+[Warning] [2023-06-17 04:26:04] table Tables already exists 
+[Warning] [2023-06-17 04:29:28] La carpeta DB ya existe. 
+[Warning] [2023-06-17 04:29:28] La carpeta LOG ya existe. 
+[Warning] [2023-06-17 04:29:28] table Tables already exists 
+[Information] [2023-06-17 04:29:28] Succes create conexion db.
+[Warning] [2023-06-17 04:29:28] table Company already exists 
+[Warning] [2023-06-17 04:31:16] La carpeta DB ya existe. 
+[Warning] [2023-06-17 04:31:16] La carpeta LOG ya existe. 
+[Warning] [2023-06-17 04:31:16] table Tables already exists 
+[Information] [2023-06-17 04:31:16] Succes create conexion db.
+[Warning] [2023-06-17 04:31:16] table Company already exists 
+[Warning] [2023-06-17 04:32:57] La carpeta DB ya existe. 
+[Warning] [2023-06-17 04:32:57] La carpeta LOG ya existe. 
+[Warning] [2023-06-17 04:32:57] table Tables already exists 
+[Information] [2023-06-17 04:32:57] Succes create conexion db.
+[Information] [2023-06-17 04:32:57] Succes create table.
+[Warning] [2023-06-17 04:35:20] La carpeta DB ya existe. 
+[Warning] [2023-06-17 04:35:20] La carpeta LOG ya existe. 
+[Warning] [2023-06-17 04:35:20] table Tables already exists 
+[Information] [2023-06-17 04:35:20] Succes create conexion db.
+[Warning] [2023-06-17 04:35:20] table Company already exists 
+[Warning] [2023-06-17 04:36:40] La carpeta DB ya existe. 
+[Warning] [2023-06-17 04:36:40] La carpeta LOG ya existe. 
+[Warning] [2023-06-17 04:36:40] table Tables already exists 
+[Debug] [2023-06-17 04:36:40] Name DB: identity.db : System table: ./db/system.db 
+[Information] [2023-06-17 04:36:40] Succes create conexion db.
+[Warning] [2023-06-17 04:36:40] table Company already exists 

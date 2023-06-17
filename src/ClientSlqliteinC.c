@@ -63,10 +63,6 @@ char *conectionName = NULL;
 response_query_sqlite *RESPONSE_QUERY = NULL;
 Log *log = NULL;
 
-// TODO (Tauriel#1#06/10/23): Crear funcion updateTable, deleteTable. Refactorizar con una funcion execute query para tambien re utilizar en insertTable.
-
-// TODO (Tauriel#1#06/10/23): Quedaron strcat mal implementado, quitarlos y corregirlos.
-
 /**
  * @brief Create db con el nombre indicado por parametro.
  * @param Nombre para la db.
@@ -123,7 +119,6 @@ void InitFolderDb(){
         } else {
             log->error("Error al crear carpeta DB.");
         }
-        printf("\tFolder : %s\n", FOLDER_DBNAME);
     }
 
     result = mkdir(FOLDER_LOGNAME, PERMISSIONS);
@@ -134,7 +129,6 @@ void InitFolderDb(){
             log->error("Error al crear carpeta LOG.");
 
         }
-        printf("\tFolder : %s\n", FOLDER_LOGNAME);
     }
 }
 
@@ -545,6 +539,8 @@ int countPoiterString(char** arrayString){
 int csl_ConectionDB(char *nameDB){
 
     InitLog();
+
+    log->debug("Name DB: %s : System table: %s",1, nameDB, SYSTEM_TABLE);
 
 	int existNameBD = -1;
 	sqlite3_stmt *res;
